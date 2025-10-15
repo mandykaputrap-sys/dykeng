@@ -1,40 +1,254 @@
-# Program Cek Normal atau Tidak (TB, BB, Umur)
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cek BB, TB, Umur — Kalkulator BMI</title>
+  <style>
+    :root{
+      --bg:#f6f8fb; --card:#ffffff; --accent:#2563eb; --good:#16a34a; --warn:#f59e0b; --bad:#ef4444; --muted:#6b7280;
+      font-family: Inter, Roboto, "Segoe UI", Arial, sans-serif;
+    }
+    body{background:var(--bg); margin:0; padding:24px; display:flex; align-items:flex-start; justify-content:center; min-height:100vh;}
+    .container{max-width:880px; width:100%;}
+    header{display:flex; align-items:center; gap:16px; margin-bottom:18px;}
+    h1{margin:0;font-size:20px;}
+    p.lead{margin:0;color:var(--muted); font-size:14px;}
+    .grid{display:grid; gap:12px; grid-template-columns:repeat(2,1fr);}
+    .card{background:var(--card); padding:16px; border-radius:12px; box-shadow:0 6px 18px rgba(15,23,42,0.06);}
+    label{display:block;font-size:13px; color:#111827; margin-bottom:6px;}
+    input, select{width:100%; padding:10px 12px; font-size:14px; border-radius:8px; border:1px solid #e6e9ef; box-sizing:border-box;}
+    .row{display:flex; gap:12px;}
+    .col{flex:1;}
+    .actions{display:flex; gap:8px; margin-top:8px;}
+    button{padding:10px 14px; border-radius:10px; border:0; cursor:pointer; font-weight:600;}
+    .btn-primary{background:var(--accent); color:white;}
+    .btn-secondary{background:#eef2ff; color:var(--accent);}
+    .result{margin-top:12px; padding:12px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.5), rgba(250,250,250,0.9));}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;}
+    .small{font-size:13px; color:var(--muted);}
+    .hint{font-size:13px;color:var(--muted); margin-top:8px;}
+    @media (max-width:700px){ .grid{grid-template-columns:1fr;} header{flex-direction:column; align-items:flex-start;} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Cek BB, TB, Umur — Kalkulator BMI</h1>
+        <p class="lead">Masukkan berat badan (kg), tinggi badan (cm), dan tanggal lahir atau umur untuk mendapatkan hasil.</p>
+      </div>
+    </header>
 
-# Input data
-tb = float(input("Masukkan Tinggi Badan (cm): "))
-bb = float(input("Masukkan Berat Badan (kg): "))
-umur = int(input("Masukkan Umur (tahun): "))
+    <div class="grid">
+      <div class="card">
+        <form id="calcForm" autocomplete="off" onsubmit="return false;">
+          <div class="row">
+            <div class="col">
+              <label for="weight">Berat badan (kg)</label>
+              <input id="weight" type="number" min="1" step="0.1" placeholder="Contoh: 48.5" required>
+            </div>
+            <div class="col">
+              <label for="height">Tinggi badan (cm)</label>
+              <input id="height" type="number" min="30" step="0.1" placeholder="Contoh: 160" required>
+            </div>
+          </div>
 
-# Konversi tinggi ke meter
-tb_meter = tb / 100
+          <div style="height:6px"></div>
 
-# Hitung BMI
-bmi = bb / (tb_meter ** 2)
+          <div class="row">
+            <div class="col">
+              <label for="birth">Tanggal lahir (pilih salah satu: tanggal lahir atau umur)</label>
+              <input id="birth" type="date" max="" >
+            </div>
+            <div class="col">
+              <label for="age">Umur (tahun) — jika tidak menggunakan tanggal lahir</label>
+              <input id="age" type="number" min="0" max="150" step="1" placeholder="Contoh: 25">
+            </div>
+          </div>
 
-# Tentukan kategori BMI
-if bmi < 18.5:
-    kategori = "Kurus"
-elif 18.5 <= bmi <= 24.9:
-    kategori = "Normal"
-elif 25 <= bmi <= 29.9:
-    kategori = "BB Berlebih"
-else:
-    kategori = "Obesitas"
+          <div style="height:6px"></div>
 
-# Tentukan kategori umur (opsional)
-if umur < 12:
-    kategori_umur = "Anak-anak"
-elif umur < 18:
-    kategori_umur = "Remaja"
-elif umur < 60:
-    kategori_umur = "Dewasa"
-else:
-    kategori_umur = "Lansia"
+          <div class="row">
+            <div class="col">
+              <label for="sex">Jenis kelamin (untuk informasi anak)</label>
+              <select id="sex">
+                <option value="unknown">Tidak dipilih / Tidak diperlukan</option>
+                <option value="male">Laki-laki</option>
+                <option value="female">Perempuan</option>
+              </select>
+            </div>
+            <div class="col" style="display:flex; align-items:flex-end;">
+              <div style="width:100%;">
+                <div class="actions" style="justify-content:flex-end;">
+                  <button class="btn-secondary" id="resetBtn" type="button">Reset</button>
+                  <button class="btn-primary" id="calcBtn" type="button">Hitung</button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-# Output hasil
-print("\n=== HASIL ===")
-print(f"Umur          : {umur} tahun ({kategori_umur})")
-print(f"Tinggi Badan  : {tb} cm")
-print(f"Berat Badan   : {bb} kg")
-print(f"BMI           : {bmi:.2f}")
-print(f"Status BB     : {kategori}")
+          <p class="hint">Catatan: Untuk anak & remaja (&lt;20 tahun) interpretasi BMI berbeda dan idealnya menggunakan grafik persentil (growth chart).</p>
+        </form>
+      </div>
+
+      <div class="card" id="outputCard" aria-live="polite">
+        <h3 style="margin-top:0">Hasil</h3>
+        <div id="resultsArea" class="result">
+          <p class="small">Belum ada perhitungan. Isi form di kiri lalu tekan <strong>Hitung</strong>.</p>
+        </div>
+
+        <div id="explain" style="margin-top:12px;">
+          <h4 style="margin:6px 0 8px 0">Tentang perhitungan</h4>
+          <p class="small">Kalkulator ini menghitung BMI = berat(kg) / (tinggi(m))² dan menggunakan klasifikasi WHO untuk dewasa (umur ≥20 tahun):
+            <br>- &lt;18.5 : Kekurangan berat badan
+            <br>- 18.5–24.9 : Normal / berat badan sehat
+            <br>- 25–29.9 : Kelebihan berat badan
+            <br>- ≥30 : Obesitas
+          </p>
+          <p class="small">Untuk anak/remaja (&lt;20 tahun), hasil BMI ditampilkan sebagai informasi saja — klasifikasi "normal" memerlukan persentil menurut usia & jenis kelamin (growth chart).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Set max date for birth input to today
+    (function setMaxBirth(){
+      const birth = document.getElementById('birth');
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth()+1).padStart(2,'0');
+      const dd = String(today.getDate()).padStart(2,'0');
+      birth.max = yyyy + '-' + mm + '-' + dd;
+    })();
+
+    const weightInput = document.getElementById('weight');
+    const heightInput = document.getElementById('height');
+    const birthInput = document.getElementById('birth');
+    const ageInput = document.getElementById('age');
+    const sexInput = document.getElementById('sex');
+    const calcBtn = document.getElementById('calcBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultsArea = document.getElementById('resultsArea');
+
+    // Utility: compute age in years (integer) from birth date
+    function computeAgeFromBirth(birthStr) {
+      if (!birthStr) return null;
+      const b = new Date(birthStr);
+      const today = new Date();
+      let age = today.getFullYear() - b.getFullYear();
+      const m = today.getMonth() - b.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < b.getDate())) age--;
+      return age;
+    }
+
+    function classifyBMIAdult(bmi) {
+      // WHO categories for adults
+      if (bmi < 18.5) return {label:'Kekurangan berat badan', color:'--bad'};
+      if (bmi < 25) return {label:'Normal / Berat badan sehat', color:'--good'};
+      if (bmi < 30) return {label:'Kelebihan berat badan (Overweight)', color:'--warn'};
+      return {label:'Obesitas', color:'--bad'};
+    }
+
+    function showResultHTML(html) {
+      resultsArea.innerHTML = html;
+    }
+
+    calcBtn.addEventListener('click', function(){
+      // Read inputs
+      const weight = parseFloat(weightInput.value);
+      const height = parseFloat(heightInput.value);
+      let age = null;
+      if (birthInput.value) {
+        age = computeAgeFromBirth(birthInput.value);
+      } else if (ageInput.value) {
+        age = parseInt(ageInput.value, 10);
+        if (Number.isNaN(age)) age = null;
+      }
+
+      // Basic validation
+      if (!weight || weight <= 0) {
+        alert('Masukkan berat badan valid (kg).');
+        weightInput.focus();
+        return;
+      }
+      if (!height || height <= 0) {
+        alert('Masukkan tinggi badan valid (cm).');
+        heightInput.focus();
+        return;
+      }
+      if (age === null || age < 0 || age > 120) {
+        // still allow calculation but show warning
+        if (!confirm('Umur tidak valid atau tidak diisi. Lanjutkan perhitungan BMI umum tanpa penilaian umur?')) return;
+      }
+
+      // Calculations
+      const heightM = height / 100;
+      const bmi = weight / (heightM * heightM);
+      // round to 1 decimal
+      const bmiRounded = Math.round(bmi * 10) / 10;
+
+      // ideal weight range for given height using BMI 18.5 - 24.9
+      const minIdeal = 18.5 * (heightM * heightM);
+      const maxIdeal = 24.9 * (heightM * heightM);
+
+      const minIdealR = Math.round(minIdeal * 10) / 10;
+      const maxIdealR = Math.round(maxIdeal * 10) / 10;
+
+      // Build result content
+      let html = `<p><strong>BMI:</strong> ${bmiRounded} <span class="small">(kg/m²)</span></p>`;
+      html += `<p><strong>Rentang berat ideal (perkiraan):</strong> ${minIdealR} kg — ${maxIdealR} kg (berdasarkan BMI 18.5–24.9)</p>`;
+
+      if (age !== null && age >= 20) {
+        const cat = classifyBMIAdult(bmi);
+        const colorVar = getComputedStyle(document.documentElement).getPropertyValue(cat.color) || 'var(--muted)';
+        html += `<p><strong>Penilaian (dewasa, umur ${age} tahun):</strong> <span class="badge" style="background:${colorVar}; color:white;">${cat.label}</span></p>`;
+        // actionable suggestion
+        if (bmi < 18.5) {
+          html += `<p class="small">Saran: Konsultasikan ke tenaga kesehatan bila penurunan berat terjadi cepat. Pertimbangkan menambah asupan kalori berkualitas dan cek kondisi medis.</p>`;
+        } else if (bmi < 25) {
+          html += `<p class="small">Saran: Pertahankan pola makan seimbang dan aktivitas fisik teratur.</p>`;
+        } else {
+          html += `<p class="small">Saran: Pertimbangkan evaluasi pola makan & aktivitas. Jika BMI tinggi, konsultasi dengan tenaga kesehatan dapat membantu perencanaan penurunan berat yang aman.</p>`;
+        }
+      } else {
+        // age null or <20
+        if (age === null) {
+          html += `<p><strong>Catatan:</strong> Umur tidak diketahui. Interpretasi BMI berbeda menurut usia. Untuk anak & remaja (<20 tahun), gunakan grafik persentil (growth chart) dan konsultasikan ke tenaga kesehatan untuk menentukan apakah berat/tinggi "normal".</p>`;
+        } else {
+          html += `<p><strong>Catatan (umur ${age} tahun):</strong> Untuk anak & remaja (&lt;20 tahun), interpretasi BMI berdasarkan persentil menurut usia & jenis kelamin. Kategori umum (berdasarkan persentil):
+            <br>- &lt;5th: Kekurangan berat badan
+            <br>- 5th–85th: Berat badan sehat
+            <br>- 85th–95th: Kelebihan berat badan
+            <br>- ≥95th: Obesitas
+          </p>`;
+          html += `<p class="small">Untuk penilaian yang akurat, gunakan growth chart resmi (WHO/CDC) atau konsultasikan ke fasilitas kesehatan.</p>`;
+        }
+      }
+
+      // show small summary of inputs
+      html = `<p class="small"><strong>Input:</strong> BB ${weight} kg • TB ${height} cm` + (age !== null ? ` • Umur ${age} tahun` : '') + `</p>` + html;
+
+      showResultHTML(html);
+    });
+
+    resetBtn.addEventListener('click', function(){
+      document.getElementById('calcForm').reset();
+      resultsArea.innerHTML = '<p class="small">Belum ada perhitungan. Isi form di kiri lalu tekan <strong>Hitung</strong>.</p>';
+    });
+
+  </script>
+</body>
+</html>
+
+Jika kamu mau:
+
+Saya bisa ubah supaya mendukung output bahasa Inggris juga.
+
+Atau saya tambahkan tabel/grafik growth chart (untuk anak) — tapi itu memerlukan data persentil (sedikit besar) — kalau kamu mau, saya siapkan versi yang memasukkan tabel CDC/WHO dan menghitung persentilnya.
+
+
+Mau saya tambahkan fitur apa lagi? (mis. simpan hasil, cetak, atau estimasi kebutuhan kalori harian?)
+
+    
