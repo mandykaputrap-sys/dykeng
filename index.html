@@ -1,0 +1,40 @@
+# Program Cek Normal atau Tidak (TB, BB, Umur)
+
+# Input data
+tb = float(input("Masukkan Tinggi Badan (cm): "))
+bb = float(input("Masukkan Berat Badan (kg): "))
+umur = int(input("Masukkan Umur (tahun): "))
+
+# Konversi tinggi ke meter
+tb_meter = tb / 100
+
+# Hitung BMI
+bmi = bb / (tb_meter ** 2)
+
+# Tentukan kategori BMI
+if bmi < 18.5:
+    kategori = "Kurus"
+elif 18.5 <= bmi <= 24.9:
+    kategori = "Normal"
+elif 25 <= bmi <= 29.9:
+    kategori = "BB Berlebih"
+else:
+    kategori = "Obesitas"
+
+# Tentukan kategori umur (opsional)
+if umur < 12:
+    kategori_umur = "Anak-anak"
+elif umur < 18:
+    kategori_umur = "Remaja"
+elif umur < 60:
+    kategori_umur = "Dewasa"
+else:
+    kategori_umur = "Lansia"
+
+# Output hasil
+print("\n=== HASIL ===")
+print(f"Umur          : {umur} tahun ({kategori_umur})")
+print(f"Tinggi Badan  : {tb} cm")
+print(f"Berat Badan   : {bb} kg")
+print(f"BMI           : {bmi:.2f}")
+print(f"Status BB     : {kategori}")
